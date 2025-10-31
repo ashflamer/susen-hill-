@@ -1,0 +1,629 @@
+<!-- Chosen Palette: Warm Neutral & Teal -->
+<!-- Application Structure Plan: A single-page dashboard with thematic sidebar navigation (Home, Context, The Complex, The Catalyst, Transformation, Application, Project Files). This non-linear structure was chosen over the report's linear chapters to empower user exploration. Users can jump directly to the psychological analysis, the character comparison, or the real-world application, making the dense academic content more accessible and digestible. Interactions include dynamic content switching, tabs, clickable timeline elements, and accordions for metadata. -->
+<!-- Visualization & Content Choices: Report Info: Derry's Complex Genesis -> Goal: Inform/Organize -> Viz: Doughnut Chart (Chart.js) showing conceptual 'Sources of Complex' -> Interaction: Static infographic -> Justification: Visually quantifies abstract psychological concepts. | Report Info: Derry's Symptoms -> Goal: Compare/Inform -> Viz: Horizontal Bar Chart (Chart.js) 'Symptom Severity' -> Interaction: Static infographic -> Justification: Makes abstract concepts tangible. | Report Info: Derry's Journey -> Goal: Change/Organize -> Viz: HTML/CSS Timeline -> Interaction: Clickable steps reveal quotes/text -> Justification: Interactively guides user through the transformation process. | Report Info: Real-World Link -> Goal: Relate/Compare -> Viz: Radar Chart (Chart.js) 'Derry's World vs. Modern World' -> Interaction: Static infographic -> Justification: Provides a powerful modern comparison. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis: Inferiority Complex in "On the Face of It"</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: #0d9488;
+            color: #ffffff;
+            transform: translateX(4px);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 300px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 350px;
+            }
+        }
+        
+        .timeline-step {
+            position: relative;
+            padding-left: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-left: 2px solid #0d9488;
+        }
+        .timeline-step:last-child {
+            border-left: 2px solid #0d9488;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -0.6rem;
+            top: 0.1rem;
+            width: 1.1rem;
+            height: 1.1rem;
+            border-radius: 50%;
+            background-color: #0d9488;
+            border: 2px solid #f0fdfa;
+        }
+        .timeline-content {
+            display: none;
+        }
+        .timeline-step.active .timeline-content {
+            display: block;
+        }
+        .timeline-title {
+            cursor: pointer;
+        }
+
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            border-color: #0d9488;
+            background-color: #f0fdfa;
+            color: #0d9488;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .accordion-header {
+            cursor: pointer;
+        }
+        .accordion-content {
+            display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-item.active .accordion-content {
+            display: block;
+            max-height: 1000px;
+        }
+        .accordion-item.active .accordion-arrow {
+            transform: rotate(180deg);
+        }
+        .accordion-arrow {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        
+        <nav class="w-full md:w-64 bg-teal-800 text-teal-50 p-6 shadow-lg md:sticky md:top-0 md:self-start md:h-screen">
+            <h1 class="text-2xl font-bold mb-8 border-b border-teal-600 pb-4">Project Analysis</h1>
+            <ul class="space-y-3">
+                <li><a href="#home" class="nav-link active block p-3 rounded-lg font-semibold" data-section="home">Home & Overview</a></li>
+                <li><a href="#context" class="nav-link block p-3 rounded-lg font-semibold" data-section="context">Author & Play Context</a></li>
+                <li><a href="#complex" class="nav-link block p-3 rounded-lg font-semibold" data-section="complex">The Complex: Derry</a></li>
+                <li><a href="#catalyst" class="nav-link block p-3 rounded-lg font-semibold" data-section="catalyst">The Catalyst: Mr. Lamb</a></li>
+                <li><a href="#transformation" class="nav-link block p-3 rounded-lg font-semibold" data-section="transformation">The Transformation</a></li>
+                <li><a href="#application" class="nav-link block p-3 rounded-lg font-semibold" data-section="application">Real-World Application</a></li>
+                <li><a href="#files" class="nav-link block p-3 rounded-lg font-semibold" data-section="files">Project Files</a></li>
+            </ul>
+        </nav>
+
+        <main class="flex-1 p-6 md:p-10">
+            
+            <section id="home" class="content-section active space-y-6">
+                <h2 class="text-4xl font-bold text-teal-800 mb-4">The Scars Within: Analysis of "On the Face of It"</h2>
+                <p class="text-lg text-stone-700 leading-relaxed">
+                    This interactive report explores Susan Hill’s dramatic work, "On the Face of It," as a profound exploration of isolation, acceptance, and the debilitating psychological consequences of physical abnormality. This application deconstructs the key themes and character arcs to provide a clear, consumable analysis of the play's core message.
+                </p>
+                
+                <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-teal-800 mb-3">Statement of Purpose</h3>
+                    <p class="text-stone-700">
+                        This project endeavors to conduct an examination of the theme of **inferiority complex**, specifically analyzing how physical disfigurement and resultant social ostracism fundamentally influence the personality development of the protagonist, Derry. Furthermore, the analysis scrutinizes the therapeutic efficacy of Mr. Lamb's optimistic philosophy in mitigating this self-limiting belief system, thereby establishing the play's function as a critique of pervasive societal prejudice.
+                    </p>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-2xl font-semibold text-teal-800 mb-4">Key Thematic Concepts</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-5 rounded-2xl shadow border border-stone-200">
+                            <h4 class="text-xl font-semibold text-teal-700 mb-2">Isolation vs. Connection</h4>
+                            <p class="text-sm text-stone-600">Exploring the self-imposed isolation of Derry versus the radical inclusivity of Mr. Lamb.</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow border border-stone-200">
+                            <h4 class="text-xl font-semibold text-teal-700 mb-2">Prejudice & Stigma</h4>
+                            <p class="text-sm text-stone-600">Analyzing the societal "gaze" and its power to inflict psychological trauma.</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow border border-stone-200">
+                            <h4 class="text-xl font-semibold text-teal-700 mb-2">Perception & Reality</h4>
+                            <p class="text-sm text-stone-600">Deconstructing the "face of it" to find the true, internal self.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="context" class="content-section space-y-6">
+                <h2 class="text-4xl font-bold text-teal-800 mb-4">Author & Play Context</h2>
+                <p class="text-lg text-stone-700 leading-relaxed">
+                    Understanding the author and the play's background provides a crucial foundation for analyzing its themes. The work is not just a story, but a piece of social commentary delivered through a concise, powerful dramatic format.
+                </p>
+                <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200 space-y-4">
+                    <div>
+                        <h3 class="text-2xl font-semibold text-teal-800 mb-2">About the Author: Susan Hill</h3>
+                        <p class="text-stone-700">
+                            Susan Hill is an English author of fiction and non-fiction works. Her novels include *The Woman in Black*, *The Mist in the Mirror*, and *I'm the King of the Castle*, for which she received the Somerset Maugham Award. Her writing is often characterized by its atmospheric tension, psychological depth, and exploration of moral ambiguity. *On the Face of It* showcases her ability to delve into complex human emotions within a minimalist structure.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold text-teal-800 mb-2">About the Play: "On the Face of It"</h3>
+                        <p class="text-stone-700">
+                            *On the Face of It* is a one-act play that revolves around two characters: Derry, a young boy with a face disfigured by acid, and Mr. Lamb, an old man with a prosthetic tin leg. The entire play is a single, extended conversation in Mr. Lamb's garden. It powerfully contrasts the cynicism and despair of youth, born from societal cruelty, with the optimism and acceptance of age, born from experience. It serves as a potent critique of prejudice and a testament to the healing power of genuine human connection.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="complex" class="content-section space-y-6">
+                <h2 class="text-4xl font-bold text-teal-800 mb-4">The Complex: Deconstructing Derry</h2>
+                <p class="text-lg text-stone-700 leading-relaxed">
+                    Derry's character is a case study in the formation and manifestation of an inferiority complex. His conflict is not with his physical scar, but with the psychological identity he has built around it. This section breaks down the "why" and "how" of his complex.
+                </p>
+
+                <div class="w-full">
+                    <div class="flex border-b border-stone-300 mb-6">
+                        <button class="tab-button active flex-1 py-3 px-4 font-semibold text-stone-600 border-b-2 border-transparent" data-tab="genesis">Genesis of the Complex</button>
+                        <button class="tab-button flex-1 py-3 px-4 font-semibold text-stone-600 border-b-2 border-transparent" data-tab="manifestation">Manifestation & Symptoms</button>
+                    </div>
+
+                    <div id="tab-genesis" class="tab-content active space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                            <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                                <h3 class="text-2xl font-semibold text-teal-800 mb-3">The Genesis: External Cruelty</h3>
+                                <p class="text-stone-700 mb-4">
+                                    The complex is instigated not by the acid, but by the consistent, detrimental responses from society. Public scrutiny, whispers, and pity function as perpetual trauma.
+                                </p>
+                                <ul class="list-disc list-inside space-y-2 text-stone-700">
+                                    <li>He is convinced his appearance renders him "ugly as a devil."</li>
+                                    <li>He recalls someone saying, "He’d have been better off dead."</li>
+                                    <li>This internalized self-loathing is externalized as a defense mechanism.</li>
+                                </ul>
+                            </div>
+                            <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                                <h3 class="text-2xl font-semibold text-teal-800 mb-3 text-center">Conceptual Sources of the Complex</h3>
+                                <div class="chart-container">
+                                    <canvas id="complexSourcesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-manifestation" class="tab-content space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                            <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                                <h3 class="text-2xl font-semibold text-teal-800 mb-3">Manifestation: Defensive Hostility</h3>
+                                <p class="text-stone-700 mb-4">
+                                    Derry's complex is apparent in his defensive and hostile demeanor. He expects revulsion and preemptively attacks to minimize emotional distress.
+                                </p>
+                                <ul class="list-disc list-inside space-y-2 text-stone-700">
+                                    <li>**Cynicism:** Assumes negative judgment from everyone.</li>
+                                    <li>**Isolation:** Retreats from the world to avoid exposure.</li>
+                                    <li>**Resentment:** Expresses anger at the world and his perceived fate.</li>
+                                </ul>
+                            </div>
+                            <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                                <h3 class="text-2xl font-semibold text-teal-800 mb-3 text-center">Key Symptoms (Conceptual Rating)</h3>
+                                <div class="chart-container" style="max-width: 550px; height: 320px; max-height: 320px;">
+                                    <canvas id="complexSymptomsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="catalyst" class="content-section space-y-6">
+                <h2 class="text-4xl font-bold text-teal-800 mb-4">The Catalyst: Mr. Lamb's Philosophy</h2>
+                <p class="text-lg text-stone-700 leading-relaxed">
+                    Mr. Lamb, also marked by disability, functions as the vital therapeutic counterpoint to Derry's despair. He systematically dismantles Derry's self-imposed restrictions by recontextualizing the very idea of "difference."
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                        <h3 class="text-2xl font-semibold text-red-700 mb-3">Derry's Mindset (The "Weed")</h3>
+                        <ul class="list-disc list-inside space-y-2 text-stone-700">
+                            <li>Focuses on deficiency.</li>
+                            <li>Sees difference as ugly.</li>
+                            <li>Believes he is unwanted, like a weed.</li>
+                            <li>Builds walls to keep people out.</li>
+                            <li>Sees the world as a threat.</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                        <h3 class="text-2xl font-semibold text-green-700 mb-3">Mr. Lamb's Philosophy (The "Flower")</h3>
+                        <ul class="list-disc list-inside space-y-2 text-stone-700">
+                            <li>Focuses on potential.</li>
+                            <li>Sees difference as interesting.</li>
+                            <li>Believes all things have value ("...a flower, if you like").</li>
+                            <li>Keeps his gate open.</li>
+                            <li>Sees the world as full of life.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                    <h3 class="text-2xl font-semibold text-teal-800 mb-3">The Core Intervention: Rejection of Labels</h3>
+                    <p class="text-stone-700 leading-relaxed">
+                        Mr. Lamb’s primary tool is the rejection of labels. He draws parallels between Derry’s appearance and elements of nature (bees, crabs, weeds) to avoid societal ideals of perfection. His guiding principle is the primacy of perspective. By asking, <strong class="text-teal-700">"You could get all over, couldn’t you?"</strong>, he forces Derry to admit his confinement is mental, not physical. He teaches that while society imposes labels, the individual holds the sole authority to reject them.
+                    </p>
+                </div>
+            </section>
+
+            <section id="transformation" class="content-section space-y-6">
+                <h2 class="text-4xl font-bold text-teal-800 mb-4">The Transformation: Derry's Journey</h2>
+                <p class="text-lg text-stone-700 leading-relaxed">
+                    Derry's transformation is an active process, not a sudden event. It culminates in his decision to defy his mother and return to the garden—a definitive act of self-affirmation. Click each step to see the analysis.
+                </p>
+                
+                <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                    <div id="timeline-container">
+                        <div class="timeline-step active">
+                            <div class="timeline-dot"></div>
+                            <h3 class="timeline-title text-xl md:text-2xl font-semibold text-teal-800 mb-2">1. Encounter & Hostility</h3>
+                            <div class="timeline-content space-y-2">
+                                <p class="text-stone-700">Derry enters the garden expecting rejection. He is defensive, hostile, and cynical, projecting his self-hatred onto Mr. Lamb.</p>
+                                <em class="text-stone-600">"I thought this was an empty place. I didn't know there was anybody here."</em>
+                            </div>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="timeline-dot"></div>
+                            <h3 class="timeline-title text-xl md:text-2xl font-semibold text-stone-700 mb-2">2. Conflict & Curiosity</h3>
+                            <div class="timeline-content space-y-2">
+                                <p class="text-stone-700">Mr. Lamb's refusal to be shocked or to pity Derry confuses him. His philosophical questions ("What are you afraid of?") break through Derry's defenses, sparking curiosity.</p>
+                                <em class="text-stone-600">"You don't get upset... You ask questions I don't understand."</em>
+                            </div>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="timeline-dot"></div>
+                            <h3 class="timeline-title text-xl md:text-2xl font-semibold text-stone-700 mb-2">3. Revelation & Shift</h3>
+                            <div class="timeline-content space-y-2">
+                                <p class="text-stone-700">Derry begins to see his confinement as mental, not physical. He realizes he has the power to choose his perspective, just as Mr. Lamb chooses to see "weeds" as "flowers."</p>
+                                <em class="text-stone-600">"Things just are. They... don't have to mean anything."</em>
+                            </div>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="timeline-dot"></div>
+                            <h3 class="timeline-title text-xl md:text-2xl font-semibold text-stone-700 mb-2">4. Defiance & Decision</h3>
+                            <div class="timeline-content space-y-2">
+                                <p class="text-stone-700">At home, Derry defies his mother's attempts to isolate him. This is the first time he asserts his own will against the identity imposed on him.</p>
+                                <em class="text-stone-600">"I want to... I want to go there. And sit and... listen to things. Listen and look."</em>
+                            </div>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="timeline-dot"></div>
+                            <h3 class="timeline-title text-xl md:text-2xl font-semibold text-stone-700 mb-2">5. Self-Realization & Action</h3>
+                            <div class="timeline-content space-y-2">
+                                <p class="text-stone-700">Derry's return to the garden is his final act of self-affirmation. He has broken free of his complex, choosing connection over fear, even if he arrives too late to tell Mr. Lamb.</p>
+                                <em class="text-stone-600">"If I don't go back there, I'll never go anywhere in this world again."</em>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="application" class="content-section space-y-6">
+                <h2 class="text-4xl font-bold text-teal-800 mb-4">Real-World Application</h2>
+                <p class="text-lg text-stone-700 leading-relaxed">
+                    The play's themes are urgently relevant today. The "Societal Gaze" that traumatized Derry finds a powerful modern equivalent in the "Digital Gaze" of social media, which breeds comparison and inferiority complexes on a global scale.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                        <h3 class="text-2xl font-semibold text-teal-800 mb-3">The Digital Gaze vs. Societal Gaze</h3>
+                        <p class="text-stone-700 mb-4">
+                            Social media platforms emphasize superficial perfection, creating relentless, unattainable standards. This constant exposure to manufactured ideals can lead to anxiety, withdrawal, and inadequacy, directly paralleling Derry’s isolation.
+                        </p>
+                        <p class="text-stone-700">
+                            The play teaches that the path to healing is internal self-acceptance, urging us to apply Mr. Lamb’s philosophy: **focus on potential, not deficiency, and reject harmful labels.**
+                        </p>
+                    </div>
+                    <div class="p-6 bg-white rounded-2xl shadow-lg border border-stone-200">
+                        <h3 class="text-2xl font-semibold text-teal-800 mb-3 text-center">Context Comparison</h3>
+                        <div class="chart-container" style="max-width: 500px;">
+                            <canvas id="worldComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="files" class="content-section space-y-6">
+                <h2 class="text-4xl font-bold text-teal-800 mb-4">Project Files & Metadata</h2>
+                <p class="text-lg text-stone-700 leading-relaxed">
+                    This section contains the project's metadata, including the action plan for its creation and the bibliography of sources consulted.
+                </p>
+
+                <div id="accordion-container" class="space-y-4">
+                    <div class="accordion-item bg-white rounded-2xl shadow-lg border border-stone-200">
+                        <div class="accordion-header flex justify-between items-center p-5">
+                            <h3 class="text-2xl font-semibold text-teal-800">Student Action Plan</h3>
+                            <span class="accordion-arrow text-teal-800 text-2xl font-bold">&#9660;</span>
+                        </div>
+                        <div class="accordion-content p-5 pt-0">
+                            <div class="overflow-x-auto">
+                                <table class="w-full min-w-[500px] text-left">
+                                    <thead class="border-b border-stone-300">
+                                        <tr>
+                                            <th class="py-2 pr-2 font-semibold">Phase</th>
+                                            <th class="py-2 px-2 font-semibold">Activity/Goal</th>
+                                            <th class="py-2 px-2 font-semibold">Target Date</th>
+                                            <th class="py-2 pl-2 font-semibold">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-stone-200">
+                                        <tr><td class="py-3 pr-2">Project Initiation</td><td class="py-3 px-2">Finalize Topic, Draft Goals, Prepare Outline.</td><td class="py-3 px-2">Oct 15</td><td class="py-3 pl-2 font-medium text-green-700">Complete</td></tr>
+                                        <tr><td class="py-3 pr-2">Execution: Research</td><td class="py-3 px-2">Research Adlerian psychology and text.</td><td class="py-3 px-2">Oct 30</td><td class="py-3 pl-2 font-medium text-green-700">Complete</td></tr>
+                                        <tr><td class="py-3 pr-2">Execution: Drafting</td><td class="py-3 px-2">Write 800-1000 word essay (Section II).</td><td class="py-3 px-2">Nov 15</td><td class="py-3 pl-2 font-medium text-green-700">Complete</td></tr>
+                                        <tr><td class="py-3 pr-2">Implementation</td><td class="py-3 px-2">Review, Revise, and Edit the Report.</td><td class="py-3 px-2">Nov 30</td><td class="py-3 pl-2 font-medium text-green-700">Complete</td></tr>
+                                        <tr><td class="py-3 pr-2">Implementation</td><td class="py-3 px-2">Finalize Cover Page, Certificate, Bibliography.</td><td class="py-3 px-2">Dec 10</td><td class="py-3 pl-2 font-medium text-green-700">Complete</td></tr>
+                                        <tr><td class="py-3 pr-2">Closure</td><td class="py-3 px-2">Assemble and submit final portfolio.</td><td class="py-3 px-2">Dec 31</td><td class="py-3 pl-2 font-medium text-green-700">Complete</td></tr>
+                                        <tr><td class="py-3 pr-2">Assessment</td><td class="py-3 px-2">Prepare presentation for Viva Voce.</td><td class="py-3 px-2">Jan 15</td><td class="py-3 pl-2 font-medium text-green-700">Complete</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item bg-white rounded-2xl shadow-lg border border-stone-200">
+                        <div class="accordion-header flex justify-between items-center p-5">
+                            <h3 class="text-2xl font-semibold text-teal-800">Bibliography / Resources</h3>
+                            <span class="accordion-arrow text-teal-800 text-2xl font-bold">&#9660;</span>
+                        </div>
+                        <div class="accordion-content p-5 pt-0">
+                            <ul class="list-decimal list-inside space-y-3 text-stone-700">
+                                <li><strong>Hill, Susan.</strong> *On the Face of It*. CBSE Class XII English Core Textbook: *Flamingo*. National Council of Educational Research and Training (NCERT).</li>
+                                <li><strong>Adler, Alfred.</strong> *Understanding Human Nature*. (Relevant chapters on inferiority feelings and compensation mechanisms).</li>
+                                <li>*CBSE Curriculum Guidelines for Class XII English Core (2024-25)*. Central Board of Secondary Education.</li>
+                                <li>*Online Literary Critical Analysis* (Selected articles focusing on theme and characterisation in *On the Face of It*).</li>
+                                <li>*Psychology Journals/Websites* (Definitions and analysis of the term 'Inferiority Complex').</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const timelineSteps = document.querySelectorAll('.timeline-step');
+            const accordionItems = document.querySelectorAll('.accordion-item');
+
+            const complexSourcesData = {
+                labels: ['Societal Gaze (Stares/Whispers)', 'Internalized Shame', "Family's Pity / Overprotection"],
+                datasets: [{
+                    label: 'Sources of Complex',
+                    data: [50, 30, 20],
+                    backgroundColor: [
+                        '#be123c',
+                        '#f97316',
+                        '#eab308'
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+
+            const complexSymptomsData = {
+                labels: ['Social Isolation', 'Defensive Hostility', 'Cynicism & Resentment', 'Internalized Shame'],
+                datasets: [{
+                    label: 'Conceptual Symptom Severity (1-5)',
+                    data: [4.5, 4, 3.5, 5],
+                    backgroundColor: [
+                        '#0d9488',
+                        '#0f766e',
+                        '#115e59',
+                        '#134e4a'
+                    ],
+                    borderColor: '#ccfbf1',
+                    borderWidth: 1
+                }]
+            };
+            
+            const worldComparisonData = {
+                labels: ['Public Scrutiny', 'Perfection Standards', 'Sense of Isolation', 'Sources of Anxiety', 'Community Connection'],
+                datasets: [{
+                    label: "Derry's World",
+                    data: [3, 2, 4, 3, 4],
+                    fill: true,
+                    backgroundColor: 'rgba(204, 51, 102, 0.2)',
+                    borderColor: 'rgb(204, 51, 102)',
+                    pointBackgroundColor: 'rgb(204, 51, 102)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(204, 51, 102)'
+                }, {
+                    label: 'Modern "Digital" World',
+                    data: [5, 5, 3, 5, 2],
+                    fill: true,
+                    backgroundColor: 'rgba(13, 148, 136, 0.2)',
+                    borderColor: 'rgb(13, 148, 136)',
+                    pointBackgroundColor: 'rgb(13, 148, 136)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(13, 148, 136)'
+                }]
+            };
+
+
+            function showSection(sectionId) {
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                const activeSection = document.getElementById(sectionId);
+                if (activeSection) {
+                    activeSection.classList.add('active');
+                }
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.section === sectionId) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = e.target.dataset.section;
+                    showSection(sectionId);
+                    window.location.hash = sectionId;
+                });
+            });
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+                });
+            });
+            
+            timelineSteps.forEach(step => {
+                const title = step.querySelector('.timeline-title');
+                title.addEventListener('click', () => {
+                    const wasActive = step.classList.contains('active');
+                    timelineSteps.forEach(s => s.classList.remove('active'));
+                    if (!wasActive) {
+                        step.classList.add('active');
+                    }
+                });
+            });
+            
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                header.addEventListener('click', () => {
+                    const wasActive = item.classList.contains('active');
+                    accordionItems.forEach(i => i.classList.remove('active'));
+                    if (!wasActive) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+            
+            function initCharts() {
+                const complexSourcesCtx = document.getElementById('complexSourcesChart');
+                if (complexSourcesCtx) {
+                    new Chart(complexSourcesCtx, {
+                        type: 'doughnut',
+                        data: complexSourcesData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                const complexSymptomsCtx = document.getElementById('complexSymptomsChart');
+                if (complexSymptomsCtx) {
+                    new Chart(complexSymptomsCtx, {
+                        type: 'bar',
+                        data: complexSymptomsData,
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    max: 5
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                const worldComparisonCtx = document.getElementById('worldComparisonChart');
+                if (worldComparisonCtx) {
+                    new Chart(worldComparisonCtx, {
+                        type: 'radar',
+                        data: worldComparisonData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            elements: {
+                                line: {
+                                    borderWidth: 3
+                                }
+                            },
+                            scales: {
+                                r: {
+                                    angleLines: {
+                                        display: true
+                                    },
+                                    suggestedMin: 0,
+                                    suggestedMax: 5,
+                                    pointLabels: {
+                                        font: {
+                                            size: 11
+                                        }
+                                    },
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            initCharts();
+
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                showSection(hash);
+            }
+        });
+    </script>
+</body>
+</html>
